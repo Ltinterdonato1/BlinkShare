@@ -26,6 +26,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { NotificationDropdown } from "./NotificationDropdown";
@@ -55,7 +61,7 @@ export function MobileHeader() {
 
 // --- 🔹 MAIN NAVBAR ---
 export function Navbar() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [results, setResults] = useState<any[]>([]);
@@ -161,7 +167,7 @@ export function Navbar() {
           </DialogContent>
         </Dialog>
 
-        {/* Create Post (Now optimized to match styling) */}
+        {/* Create Post */}
         <CreatePost />
 
         {/* Messages */}
@@ -186,17 +192,36 @@ export function Navbar() {
           </PopoverContent>
         </Popover>
 
-        {/* Profile */}
-        <Link href={user ? `/profile/${user.uid}` : "/login"}>
-          {user?.photoURL ? (
-            <Avatar className="h-7 w-7 border border-zinc-800 hover:opacity-80 transition-opacity">
-              <AvatarImage src={user.photoURL} />
-              <AvatarFallback>{user.displayName?.[0] || "U"}</AvatarFallback>
-            </Avatar>
-          ) : (
-            <User className="h-7 w-7 hover:text-blue-500 transition-colors text-white" />
-          )}
-        </Link>
+        {/* Profile Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="outline-none focus:ring-0">
+              {user?.photoURL ? (
+                <Avatar className="h-7 w-7 border border-zinc-800 hover:opacity-80 transition-opacity">
+                  <AvatarImage src={user.photoURL} />
+                  <AvatarFallback>{user.displayName?.[0] || "U"}</AvatarFallback>
+                </Avatar>
+              ) : (
+                <User className="h-7 w-7 hover:text-blue-500 transition-colors text-white" />
+              )}
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48 bg-zinc-950 border-zinc-800 text-white shadow-xl mt-2">
+            <DropdownMenuItem asChild>
+              <Link href={user ? `/profile/${user.uid}` : "/login"} className="flex items-center w-full cursor-pointer py-2 px-3 hover:bg-zinc-900 transition-colors">
+                <User className="mr-2 h-4 w-4" />
+                <span>Profile</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={logout} 
+              className="flex items-center w-full cursor-pointer py-2 px-3 text-red-500 focus:text-red-500 hover:bg-zinc-900 transition-colors"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Log Out</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </nav>
     </>
   );
